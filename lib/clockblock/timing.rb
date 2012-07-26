@@ -7,8 +7,8 @@ module Clockblock
       metaclass = class << self; self; end
       metaclass.class_eval do
         alias_method stashed_method, method
-        instance_variable_set timer_ivar, Clockblock::Timer.new
         define_method method do |*args, &block|
+          instance_variable_set timer_ivar, Clockblock::Timer.new
 
           instance_variable_get(timer_ivar).clock(method) do
             send stashed_method, *args, &block
