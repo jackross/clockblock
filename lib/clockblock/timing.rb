@@ -4,7 +4,7 @@ module Clockblock
     def add_timing_to method
       stashed_method = "stashed_#{method}".to_sym
       timer_ivar = "@#{method}_timer".to_sym
-      metaclass = class << m; self; end
+      metaclass = class << self; self; end
       metaclass.class_eval do
         alias_method stashed_method, method
         instance_variable_set timer_ivar, Clockblock::Timer.new
