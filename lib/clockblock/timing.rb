@@ -10,7 +10,7 @@ module Clockblock
         instance_variable_set timer_ivar, Clockblock::Timer.new
         define_method method do |*args, &block|
 
-          timer_ivar.clock(method) do
+          instance_variable_get(timer_ivar).clock(method) do
             send stashed_method, *args, &block
           end
 
