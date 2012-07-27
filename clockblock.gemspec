@@ -14,6 +14,7 @@ Gem::Specification.new do |gem|
   gem.name          = "clockblock"
   gem.require_paths = ["lib"]
   gem.version       = Clockblock::VERSION
+  gem.add_dependency "activesupport"
   gem.add_development_dependency "rake"
   gem.add_development_dependency "minitest"
   gem.add_development_dependency "turn"
