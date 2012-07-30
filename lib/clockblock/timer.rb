@@ -1,22 +1,23 @@
 module Clockblock
   class Timer
-    attr_reader :started_at, :finished_at, :stage
+    attr_reader :started_at, :finished_at, :stage, :clockblock_result
  
     def initialize(opts = {})
       @stage = :initialized
+      yield self if block_given?
     end
 
     def clock(name = "Anonymous Timer")
       begin
         start
         @stage = :executing
-        result = yield
+        @clockblock_result = yield
         stop
       rescue => ex
         @stage = :error
         raise TimerException.new("Error while executing '#{name}': '#{ex.message}'!")
       end
-      result
+      @clockblock_result
     end
 
     def start
@@ -47,11 +48,11 @@ module Clockblock
     end
 
     def inspect
-      attributes
+      to_s
     end
 
     def to_s
-      attributes
+      attributes.to_s
     end
 
     class TimerException < Exception
