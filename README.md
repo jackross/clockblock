@@ -5,7 +5,7 @@
 ClockBlock
 ==========
 
-Extend ClockBlock::Timing in your class definition to add timers to your methods:
+Extend Clockblock::Timing in your class definition to add timers to your methods:
 
 ````ruby
 require 'clockblock'
@@ -28,7 +28,7 @@ f.clockblock_timers[:bar]
 
 ````
 
-Extend your instances with ClockBlock::Timing to add timers to your methods:
+Extend your instances with Clockblock::Timing to add timers to your methods:
 
 ````ruby
 require 'clockblock'
@@ -49,7 +49,7 @@ f.clockblock_timers[:bar]
 
 ````
 
-Extend your classes with ClockBlock::Timing to add timers to your methods:
+Extend your classes with Clockblock::Timing to add timers to your methods:
 
 ````ruby
 require 'clockblock'
@@ -72,7 +72,7 @@ puts f.clockblock_timers
 
 ````
 
-Wrap your code in a Clock Block to measure execution duration.
+Wrap your code in a Clockblock clock block to measure execution duration.
 
 ````ruby
 require 'clockblock'
