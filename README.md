@@ -1,3 +1,7 @@
+[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/jackross/clockblock)
+
+
+
 ClockBlock
 ==========
 
@@ -52,7 +56,7 @@ require 'clockblock'
 
 class Foo
   def bar
-    sleep 1
+    sleep 2
   end
 end
 
@@ -78,7 +82,7 @@ class Foo
   def bar
     t = Clockblock::Timer.new
     result = t.clock do
-      # your code here
+      sleep 2 # replace 'sleep 2' with your code!
     end
     puts t.attributes
     result
