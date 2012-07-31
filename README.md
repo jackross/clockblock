@@ -63,7 +63,7 @@ end
 Foo.extend Clockblock::Timing
 Foo.add_timing_to :bar, :baz
 puts Foo.instance_variable_get(:@future_timer_methods)
-class Foo; def baz; sleep 1; end; end
+class Foo; def baz; sleep 2; end; end
 f = Foo.new
 f.bar
 f.baz

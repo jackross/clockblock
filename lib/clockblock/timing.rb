@@ -3,28 +3,7 @@ module Clockblock
 
     module ClassMethods
       def receiver
-        self.is_a?(Class) ? self : (class << self; self; end)
-      end
-
-      def add_timing_to *methods
-        methods.each do |method|
-          if receiver.method_defined? method
-            add_timing_to_method method
-          else
-            @future_timer_methods ||= []
-            @future_timer_methods << method
-          end
-        end
-      end
-
-      def method_added(method)
-        if @future_timer_methods && @future_timer_methods.include?(method)
-          unless @added_by_clockblock
-            @added_by_clockblock = true
-            add_timing_to_method method
-          end
-          @added_by_clockblock = false
-        end
+        self.is_a?(Class) ? self : self.singleton_class #(class << self; self; end)
       end
 
       def add_timing_to_method(method)
@@ -41,6 +20,37 @@ module Clockblock
           end
         end
       end
+
+      def add_timing_to *methods
+        methods.each do |method|
+          if receiver.method_defined? method
+            add_timing_to_method method
+          else
+            @future_timer_methods ||= []
+            @future_timer_methods << method
+          end
+        end
+      end
+
+      def future_method_added(method)
+        if @future_timer_methods && @future_timer_methods.include?(method)
+          unless @added_by_clockblock
+            @added_by_clockblock = true
+            @future_timer_methods -= [method]
+            add_timing_to_method method
+          end
+          @added_by_clockblock = false
+        end
+      end
+
+      def method_added(method)
+        future_method_added method
+      end
+
+      def singleton_method_added(method)
+        future_method_added method
+      end
+
     end
 
     def self.extended(base)

@@ -1,15 +1,18 @@
 require File.expand_path('../../../spec_helper', __FILE__)
 
 describe Clockblock::Timing do
-  describe "extending Clockblock::Timing in a class definition" do
-    let(:ret_val) { 42 }
+  let(:ret_val) { 42 }
 
-    def run_timing_specs(f)
-      f.bar(ret_val).must_equal ret_val
+  def run_timing_specs_on(f, *methods)
+    methods.each do |method|
+      f.send(method, ret_val).must_equal ret_val
       f.clockblock_timers.must_be_kind_of Hash
-      f.clockblock_timers.keys.must_include :bar
-      f.clockblock_timers[:bar].must_be_instance_of Clockblock::Timer
+      f.clockblock_timers.keys.must_include method
+      f.clockblock_timers[method].must_be_instance_of Clockblock::Timer
     end
+  end
+
+  describe "extending Clockblock::Timing in a class definition" do
 
     it "wraps an already defined method in a clock block" do
       
@@ -23,11 +26,11 @@ describe Clockblock::Timing do
 
       end
 
-      run_timing_specs foo_klass.new
+      run_timing_specs_on foo_klass.new, :bar
 
     end
 
-    it "wraps an undefined method in a clock block" do
+    it "eventually wraps an as yet undefined method in a clock block" do
       
       foo_klass = Class.new do
         extend Clockblock::Timing
@@ -39,7 +42,27 @@ describe Clockblock::Timing do
 
       end
 
-      run_timing_specs foo_klass.new
+      run_timing_specs_on foo_klass.new, :bar
+
+    end
+
+    it "wraps multiple methods in a clock block" do
+      
+      foo_klass = Class.new do
+        extend Clockblock::Timing
+        add_timing_to :bar, :baz
+
+        def bar(ret_val)
+          sleep 0.1; ret_val
+        end
+
+        def baz(ret_val)
+          sleep 0.1; ret_val
+        end
+
+      end
+
+      run_timing_specs_on foo_klass.new, :bar, :baz
 
     end
 
@@ -57,11 +80,41 @@ describe Clockblock::Timing do
         end
       end
 
-      run_timing_specs foo_klass.new
+      run_timing_specs_on foo_klass.new, :bar
 
     end
 
     it "class can be extended 'after the fact' and still wrap a method defined in a clock block" do
+      
+      foo_klass_a = Class.new do
+        def bar(ret_val)
+          sleep 0.1; ret_val
+        end
+      end
+
+      foo_klass_b = Class.new do
+        def bar(ret_val)
+          sleep 0.1; ret_val
+        end
+      end
+
+      foo_klass_a.class_eval do
+        extend Clockblock::Timing
+        add_timing_to :bar
+      end
+
+      foo_klass_b.extend Clockblock::Timing
+      foo_klass_b.add_timing_to :bar
+
+      run_timing_specs_on foo_klass_a.new, :bar
+      run_timing_specs_on foo_klass_b.new, :bar
+
+    end
+  end
+
+  describe "extending Clockblock::Timing with an instance" do
+
+    it "wraps a defined method in a clock block" do
       
       foo_klass = Class.new do
         def bar(ret_val)
@@ -69,13 +122,31 @@ describe Clockblock::Timing do
         end
       end
 
-      foo_klass.class_eval do
-        extend Clockblock::Timing
-        add_timing_to :bar
-      end
+      f = foo_klass.new
+      f.extend Clockblock::Timing
+      f.add_timing_to :bar
 
-      run_timing_specs foo_klass.new
+      run_timing_specs_on f, :bar
 
     end
+
+    it "eventually wraps an undefined method in a clock block" do
+
+      foo_klass = Class.new do
+      end
+
+      f = foo_klass.new
+      f.extend Clockblock::Timing
+      f.add_timing_to :bar
+
+      def f.bar(ret_val)
+        sleep 0.1; ret_val
+      end
+
+      run_timing_specs_on f, :bar
+
+    end
+
   end
+
 end
