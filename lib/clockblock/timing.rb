@@ -1,3 +1,5 @@
+require 'set'
+
 module Clockblock
   module Timing
 
@@ -26,7 +28,7 @@ module Clockblock
           if receiver.method_defined? method
             add_timing_to_method method
           else
-            @future_timer_methods ||= []
+            @future_timer_methods ||= Set.new
             @future_timer_methods << method
           end
         end
@@ -36,7 +38,7 @@ module Clockblock
         if @future_timer_methods && @future_timer_methods.include?(method)
           unless @added_by_clockblock
             @added_by_clockblock = true
-            @future_timer_methods -= [method]
+            @future_timer_methods.subtract [method]
             add_timing_to_method method
           end
           @added_by_clockblock = false
