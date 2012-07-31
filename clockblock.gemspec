@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["jack.ross@technekes.com"]
   gem.description   = %q{Enables easy and DRY code timing capabilities.}
   gem.summary       = %q{Wrap your code in a Clock Block to measure execution duration.}
-  gem.homepage      = ""
+  gem.homepage      = "https://github.com/jackross/clockblock"
 
   gem.files         = `git ls-files`.split($\)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
