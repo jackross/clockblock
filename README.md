@@ -2,7 +2,7 @@
 [![Build Status](https://secure.travis-ci.org/jackross/clockblock.png)](http://travis-ci.org/jackross/clockblock)
 
 
-ClockBlock
+Clockblock
 ==========
 
 Extend Clockblock::Timing in your class definition to add timers to your methods:
