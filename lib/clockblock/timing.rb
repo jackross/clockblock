@@ -5,11 +5,15 @@ module Clockblock
 
     module ClassMethods
       def receiver
-        self.is_a?(Class) ? self : self.singleton_class #(class << self; self; end)
+        self.is_a?(Class) ? self : self.singleton_class
+      end
+
+      def stashed_method_name_for(method)
+        "#{method}_stashed_by_clockblock".to_sym
       end
 
       def add_timing_to_method(method)
-        stashed_method = "#{method}_stashed_by_clockblock".to_sym
+        stashed_method = stashed_method_name_for method
         receiver.class_eval do
           alias_method stashed_method, method
           define_method method do |*args, &block|
@@ -25,7 +29,7 @@ module Clockblock
 
       def add_timing_to *methods
         methods.each do |method|
-          if receiver.method_defined? method
+          if receiver.method_defined?(method) && !receiver.method_defined?(stashed_method_name_for(method))
             add_timing_to_method method
           else
             @future_timer_methods ||= Set.new
@@ -35,12 +39,10 @@ module Clockblock
       end
 
       def future_method_added(method)
-        if @future_timer_methods && @future_timer_methods.include?(method)
-          unless @added_by_clockblock
-            @added_by_clockblock = true
-            @future_timer_methods.subtract [method]
-            add_timing_to_method method
-          end
+        if !@added_by_clockblock && @future_timer_methods && @future_timer_methods.include?(method)
+          @added_by_clockblock = true
+          @future_timer_methods.subtract [method]
+          add_timing_to_method method
           @added_by_clockblock = false
         end
       end
